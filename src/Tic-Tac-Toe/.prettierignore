@@ -1,0 +1,21 @@
+# 构建产物
+/dist
+/build
+/out
+
+# 依赖包
+node_modules
+
+# 缓存与日志
+.cache
+*.log
+
+# 静态资源
+public
+*.png
+*.jpg
+*.svg
+
+# 锁文件
+package-lock.json
+yarn.lock
