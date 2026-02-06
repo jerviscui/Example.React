@@ -118,6 +118,16 @@ export default function Board() {
 }
 
 function Square({ value, onSquareClick }) {
+  console.log(
+    'Square ' + value,
+    new Date().toLocaleTimeString('zh-CN', {
+      hour12: false,
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+      fractionalSecondDigits: 3,
+    }),
+  );
   return (
     <button className="square" onClick={onSquareClick}>
       {value}
