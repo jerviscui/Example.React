@@ -1,9 +1,65 @@
 import { useState } from 'react';
 
-export default function Board() {
-  const [squares, setSquares] = useState(Array(9).fill(null));
+export default function Game() {
+  const [history, setHistory] = useState([Array(9).fill(null)]);
   const [next, setNext] = useState(true);
+  let squares = history[history.length - 1];
 
+  function onPlay(newSquares) {
+    //way 1
+    // const newArray = [...history, newSquares];
+    // setHistory(newArray);
+    // setNext((newArray.length - 1) % 2 === 0);
+
+    //way 2
+    history.push(newSquares);
+    setNext((history.length - 1) % 2 === 0);
+    // squares = history[history.length - 1]; //少了这里 btns 不会刷新，为什么？
+  }
+
+  const btns = history.map((_, index) => {
+    if (index === history.length - 1) {
+      return null;
+    }
+
+    let desc;
+    if (index > 0) {
+      desc = 'Go to move #' + index;
+    } else {
+      desc = 'Go to game start';
+    }
+
+    return (
+      <li key={index}>
+        <button
+          onClick={() => {
+            jumpTo(index);
+          }}
+        >
+          {desc}
+        </button>
+      </li>
+    );
+  });
+
+  function jumpTo(move) {
+    setHistory(history.slice(0, move + 1));
+    setNext(move % 2 === 0);
+  }
+
+  return (
+    <div className="game">
+      <div className="game-board">
+        <Board next={next} squares={squares} onPlay={onPlay} />
+      </div>
+      <div className="game-info">
+        <ol>{btns}</ol>
+      </div>
+    </div>
+  );
+}
+
+function Board({ next, squares, onPlay }) {
   let status;
   let winner = calculateWinner();
   if (winner) {
@@ -24,8 +80,7 @@ export default function Board() {
       newArray[index] = 'O';
     }
 
-    setSquares(newArray);
-    setNext(!next);
+    onPlay(newArray);
   }
 
   function calculateWinner() {
@@ -128,6 +183,7 @@ function Square({ value, onSquareClick }) {
       fractionalSecondDigits: 3,
     }),
   );
+
   return (
     <button className="square" onClick={onSquareClick}>
       {value}
