@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 
 export default function Game() {
   const [history, setHistory] = useState([Array(9).fill(null)]);
@@ -7,40 +7,48 @@ export default function Game() {
 
   function onPlay(newSquares) {
     //way 1
-    // const newArray = [...history, newSquares];
-    // setHistory(newArray);
-    // setNext((newArray.length - 1) % 2 === 0);
-
+    const newArray = [...history, newSquares];
+    setHistory(newArray);
+    setNext((newArray.length - 1) % 2 === 0);
     //way 2
-    history.push(newSquares);
-    setNext((history.length - 1) % 2 === 0);
+    //! wrong! 必须用 setHistory 来更新 history，React 只有在 state 发生变化时才会重新渲染组件。
+    // history.push(newSquares);
+    // setNext((history.length - 1) % 2 === 0);
     // squares = history[history.length - 1]; //少了这里 btns 不会刷新，为什么？
   }
 
-  const btns = history.map((_, index) => {
-    if (index === history.length - 1) {
-      return null;
-    }
+  const btns = useMemo(
+    () => {
+      console.log('creating btns...');
 
-    let desc;
-    if (index > 0) {
-      desc = 'Go to move #' + index;
-    } else {
-      desc = 'Go to game start';
-    }
+      return history.map((_, index) => {
+        if (index === history.length - 1) {
+          return null;
+        }
 
-    return (
-      <li key={index}>
-        <button
-          onClick={() => {
-            jumpTo(index);
-          }}
-        >
-          {desc}
-        </button>
-      </li>
-    );
-  });
+        let desc;
+        if (index > 0) {
+          desc = 'Go to move #' + index;
+        } else {
+          desc = 'Go to game start';
+        }
+
+        return (
+          <li key={index}>
+            <button
+              onClick={() => {
+                jumpTo(index);
+              }}
+            >
+              {desc}
+            </button>
+          </li>
+        );
+      });
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [history],
+  );
 
   function jumpTo(move) {
     setHistory(history.slice(0, move + 1));
