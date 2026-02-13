@@ -1,0 +1,6 @@
+dist
+node_modules
+.vscode
+*.esproj
+*.sln
+package-lock.json
